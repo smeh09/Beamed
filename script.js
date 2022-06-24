@@ -238,7 +238,7 @@ const update = (timestamp) => {
     color = JSON.parse(JSON.stringify(originalColor));
     let off = 600 / FOV;
     lineX += off;
-    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY)) * 150000000000 * Math.cos(radians(playerA));
+    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY));
     let height = (20000/dist);
     color[0] += -dist/3;
     color[1] += -dist/3;
