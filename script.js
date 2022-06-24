@@ -20,13 +20,13 @@ const maxlen = 50;
 
 const map = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 1, 1, 1, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 1, 1, 1, 0, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 1, 1, 0, 1],
+  [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
   [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
+  [1, 0, 0, 1, 0, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
@@ -139,23 +139,6 @@ document.addEventListener('keyup', (event) => {
 
 const FOV = 60;
 
-// floor and sky
-const floor = document.createElement('div');
-floor.style.left = `0px`;
-floor.style.top = `${600/2}px`;
-floor.style.width = `${600}px`;
-floor.style.height = `${600/2}px`;
-floor.style.background = 'linear-gradient(rgb(88, 220, 100), rgb(59, 150, 83))';
-container.appendChild(floor);
-
-const sky = document.createElement('div');
-sky.style.left = `0px`;
-sky.style.top = `0px`;
-sky.style.width = `${600}px`;
-sky.style.height = `${600/2}px`;
-sky.style.backgroundColor = 'rgb(148, 221, 255)';
-container.appendChild(sky);
-
 // create raycast
 let rayX = playerX, rayY = playerY;
 let rayLines = [];
@@ -169,7 +152,7 @@ for (let i = 0; i < FOV; i++) {
   sceneLines.push(line(playerX, playerY, playerX, playerY, 2, [0, 255, 100]));
 }
 let lineX = 0;
-const originalColor = [54, 177, 255];
+const originalColor = [225, 225, 225];
 let color = JSON.parse(JSON.stringify(originalColor));
 
 // create player
@@ -255,11 +238,11 @@ const update = (timestamp) => {
     color = JSON.parse(JSON.stringify(originalColor));
     let off = 600 / FOV;
     lineX += off;
-    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY));
+    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY)) * 150000000000 * Math.cos(radians(playerA));
     let height = (20000/dist);
-    color[0] += -dist/4;
-    color[1] += -dist/4;
-    color[2] += -dist/4;
+    color[0] += -dist/3;
+    color[1] += -dist/3;
+    color[2] += -dist/3;
     updateLine(sceneLines[i], lineX, 300 - height/2, lineX, 300 + height/2, 600/FOV+1, color);
   }
 
