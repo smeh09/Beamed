@@ -1,8 +1,6 @@
-
-
 const container = document.querySelector("#container");
 
-const TILE_SIZE = 75;
+const TILE_SIZE = 600 / 10;
 
 let playerX = 300;
 let playerY = 487.5;
@@ -21,14 +19,16 @@ let playerV = [0, 0];
 const maxlen = 50;
 
 const map = [
-  [1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 1, 0, 0, 1, 0, 1],
-  [1, 1, 1, 0, 0, 1, 0, 1],
-  [1, 0, 0, 0, 0, 1, 0, 1],
-  [1, 0, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1]
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 1, 1, 1, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 const degrees = (radians) => {
@@ -137,25 +137,24 @@ document.addEventListener('keyup', (event) => {
   }
 });
 
-// create map
-map.forEach((row, y) => {
-  row.forEach((tile, x) => {
-    if (tile === 1) {
-      const tile = document.createElement('div');
-
-      tile.style.left = `${x * TILE_SIZE}px`;
-      tile.style.top = `${y * TILE_SIZE}px`;
-      tile.style.width = `${TILE_SIZE}px`;
-      tile.style.height = `${TILE_SIZE}px`;
-      tile.style.border = '1px solid grey';
-      tile.style.background = 'rgb(255, 255, 255)';
-
-      container.appendChild(tile);
-    }
-  });
-});
-
 const FOV = 60;
+
+// floor and sky
+const floor = document.createElement('div');
+floor.style.left = `0px`;
+floor.style.top = `${600/2}px`;
+floor.style.width = `${600}px`;
+floor.style.height = `${600/2}px`;
+floor.style.background = 'linear-gradient(rgb(88, 220, 100), rgb(59, 150, 83))';
+container.appendChild(floor);
+
+const sky = document.createElement('div');
+sky.style.left = `0px`;
+sky.style.top = `0px`;
+sky.style.width = `${600}px`;
+sky.style.height = `${600/2}px`;
+sky.style.backgroundColor = 'rgb(148, 221, 255)';
+container.appendChild(sky);
 
 // create raycast
 let rayX = playerX, rayY = playerY;
@@ -163,6 +162,15 @@ let rayLines = [];
 for(let i = 0; i < FOV; i++) {
   rayLines.push(line(playerX, playerY, rayX, rayY, 2, [0, 255, 100]));
 }
+
+// 3d scene
+let sceneLines = [];
+for (let i = 0; i < FOV; i++) {
+  sceneLines.push(line(playerX, playerY, playerX, playerY, 2, [0, 255, 100]));
+}
+let lineX = 0;
+const originalColor = [54, 177, 255];
+let color = JSON.parse(JSON.stringify(originalColor));
 
 // create player
 const player = document.createElement('div');
@@ -173,7 +181,7 @@ player.style.width = '15px';
 player.style.height = '15px';
 player.style.background = 'yellow';
 
-container.appendChild(player);
+// container.appendChild(player);
 
 let lastTimestamp;
 const update = (timestamp) => {
@@ -183,32 +191,34 @@ const update = (timestamp) => {
   let playerV = [0, 0,]
 
   if (angleA) {
-    playerA += 100 * deltatime;
+    playerA -= 75 * deltatime;
   }
   if (angleS) {
-    playerA -= 100 * deltatime;
+    playerA += 75 * deltatime;
   }
   if (movingT) {
-    playerV[0] = Math.cos(radians(playerA)) * 200 * deltatime;
-    playerV[1] -= Math.sin(radians(playerA)) * 200 * deltatime;
+    playerV[0] += Math.cos(radians(playerA)) * 150 * deltatime;
+    playerV[1] -= Math.sin(radians(playerA)) * 150 * deltatime;
   }
   if (movingB) {
-    playerV[0] -= Math.cos(radians(playerA)) * 200 * deltatime;
-    playerV[1] += Math.sin(radians(playerA)) * 200 * deltatime;
+    playerV[0] -= Math.cos(radians(playerA)) * 150 * deltatime;
+    playerV[1] += Math.sin(radians(playerA)) * 150 * deltatime;
   }
   if (movingR) {
-    playerV[0] -= Math.cos(radians(playerA + 90)) * 200 * deltatime;
-    playerV[1] += Math.sin(radians(playerA + 90)) * 200 * deltatime;
+    playerV[0] += Math.cos(radians(playerA + 90)) * 150 * deltatime;
+    playerV[1] -= Math.sin(radians(playerA + 90)) * 150 * deltatime;
   }
   if (movingL) {
-    playerV[0] -= Math.cos(radians(playerA - 90)) * 200 * deltatime;
-    playerV[1] += Math.sin(radians(playerA - 90)) * 200 * deltatime;
+    playerV[0] += Math.cos(radians(playerA - 90)) * 150 * deltatime;
+    playerV[1] -= Math.sin(radians(playerA - 90)) * 150 * deltatime;
   }
 
   playerX += playerV[0];
   playerY += playerV[1];
 
   let rayA = playerA - FOV/2;
+
+  lineX = -5;
 
   for (let i = 0; i < FOV; i++) {
     rayX = playerX;
@@ -242,11 +252,19 @@ const update = (timestamp) => {
       });
     }
 
-    updateLine(rayLines[i], playerX, playerY, rayX, rayY, 2, [0, 255, 100]);
-    
-    player.style.left = `${playerX - 15 / 2}px`;
-    player.style.top = `${playerY - 15 / 2}px`;
+    color = JSON.parse(JSON.stringify(originalColor));
+    let off = 600 / FOV;
+    lineX += off;
+    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY));
+    let height = (20000/dist);
+    color[0] += -dist/4;
+    color[1] += -dist/4;
+    color[2] += -dist/4;
+    updateLine(sceneLines[i], lineX, 300 - height/2, lineX, 300 + height/2, 600/FOV+1, color);
   }
+
+  player.style.left = `${playerX - 15 / 2}px`;
+  player.style.top = `${playerY - 15 / 2}px`;
 
   window.requestAnimationFrame(update);
 };
