@@ -26,7 +26,7 @@ const map = [
   [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
   [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+  [1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
@@ -238,7 +238,8 @@ const update = (timestamp) => {
     color = JSON.parse(JSON.stringify(originalColor));
     let off = 600 / FOV;
     lineX += off;
-    let dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY));
+    let dist;
+    dist = Math.sqrt((rayX - playerX)*(rayX - playerX) + (rayY - playerY)*(rayY - playerY)) * Math.cos(radians(rayA) - radians(playerA));
     let height = (20000/dist);
     color[0] += -dist/3;
     color[1] += -dist/3;
